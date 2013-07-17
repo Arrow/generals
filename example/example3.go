@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/Arrow/display"
 	"github.com/Arrow/generals"
-	"log"
+	//"log"
 	"time"
+	"github.com/golang/glog"
 )
 
 const (
@@ -13,9 +14,6 @@ const (
 	border        = 5
 	heading       = 20
 )
-
-type Frame struct{}
-type Timing struct{}
 
 type OrderTiming struct {
 	o generals.Order
@@ -25,7 +23,7 @@ type OrderTiming struct {
 func OrderKey(d *display.Display, ch chan generals.Order, o generals.Order, key string) {
 	err := d.NewKeyBinding(func() { ch <- o }, key)
 	if err != nil {
-		log.Fatal(err)
+		glog.Fatal(err)
 	}
 }
 
@@ -35,7 +33,9 @@ func KeyOrders(d *display.Display) chan generals.Order {
 	OrderKey(d, ch, generals.ForwardMarch, "f")
 	OrderKey(d, ch, generals.LeftTurn, "l")
 	OrderKey(d, ch, generals.RightTurn, "r")
-	OrderKey(d, ch, generals.RightWheel, "w")
+	OrderKey(d, ch, generals.LeftWheel, "q")
+	OrderKey(d, ch, generals.RightWheel, "e")
+	glog.Infoln("Keys Logged")
 	return ch
 }
 
@@ -52,12 +52,14 @@ func CallOrders(orders []OrderTiming) chan generals.Order {
 }
 
 func main() {
+	defer glog.Flush()
+	
 	d, err := display.NewDisplay(width, height, border, heading, "Soldier")
 	if err != nil {
-		log.Fatal(err)
+		glog.Fatal(err)
 	}
 	
-	c := generals.NewCompany(d, generals.Point{100, 200}, 0, 25, generals.TwoRow)
+	c := generals.NewCompany(d, generals.Point{100, 200}, 0, 24, generals.FourRow)
 	
 	tick := time.Tick(500 * time.Millisecond)
 	timer := time.Tick(time.Second)
@@ -82,6 +84,10 @@ func main() {
 		case o := <-orders:
 			if o == generals.RightWheel {
 				return
+			}
+			if o == generals.LeftWheel {
+				c.PrintFormation()
+				break
 			}
 			c.Orders(o)
 		default:

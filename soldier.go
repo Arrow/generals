@@ -2,8 +2,8 @@ package generals
 
 import (
 	"math"
-	//"fmt"
-	//"image"
+	"fmt"
+	"strings"
 	"github.com/Arrow/display"
 	"image/color"
 )
@@ -69,15 +69,44 @@ type Soldier struct {
 	OnRight    *Soldier
 	InFront    *Soldier
 	OnLeft     *Soldier
+	Adj        []*Soldier
+	Name       string
 }
 
-func NewSoldier(d *display.Display, pt Point, dir float64) *Soldier {
+func NewSoldier(d *display.Display, name string, pt Point, dir float64) *Soldier {
 	s := new(Soldier)
+	s.Name = name
 	s.P = d.NewParticle(pt.X, pt.Y, 2, RankColor)
 	s.Pt = pt
 	s.PastPt = pt
 	s.Dir = dir
+	s.Adj = make([]*Soldier, 4)
 	return s
+}
+
+func (s *Soldier) GetName() string {
+	return s.Name
+}
+
+func (s *Soldier) String() string {
+	str := make([]string, 0)
+	str = append(str, fmt.Sprintf("Name: %v; ", s.Name))
+	if s.Adj[3] != nil {
+		str = append(str, fmt.Sprintf("L: %v; ", s.Adj[3].GetName()))
+	} else {
+		str = append(str, "L:    nil; ")
+	}
+	if s.Adj[0] != nil {
+		str = append(str, fmt.Sprintf("F: %v; ", s.Adj[0].GetName()))
+	} else {
+		str = append(str, "F:    nil; ")
+	}
+	if s.Adj[1] != nil {
+		str = append(str, fmt.Sprintf("R: %v; \n", s.Adj[1].GetName()))
+	} else {
+		str = append(str, "R:    nil; \n")
+	}
+	return strings.Join(str, "")
 }
 
 func (s *Soldier) Revert() {
@@ -96,51 +125,46 @@ func (s *Soldier) Position() Point {
 
 func (s *Soldier) Update() {
 	s.PastPt = s.Pt
-}
-
-func (s *Soldier) Color() color.Color {
-	if s.InFront == nil {
-		return FrontColor
+	switch s.Current {
+	case LeftTurn, RightTurn:
+		s.Revert()
 	}
-	if s.OnLeft == nil {
-		return LeftColor
+}
+
+func (s *Soldier) Color() {
+	if s.Adj[0] == nil {
+		s.P.ChangeColor(FrontColor)
+		return
 	}
-	if s.OnRight == nil {
-		return RightColor
+	if s.Adj[1] == nil {
+		s.P.ChangeColor(RightColor)
+		return
 	}
-	return color.Black
-}
-
-func (s *Soldier) SetInFront(sRef *Soldier) {
-	s.InFront = sRef
-}
-
-func (s *Soldier) SetOnRight(sRef *Soldier) {
-	s.OnRight = sRef
-}
-
-func (s *Soldier) SetOnLeft(sRef *Soldier) {
-	s.OnLeft = sRef
+	if s.Adj[3] == nil {
+		s.P.ChangeColor(LeftColor)
+		return
+	}
+	s.P.ChangeColor(color.Black)
 }
 
 func (s *Soldier) refPoint() Point {
 	var pt, tmp Point
 	var dir float64
-	if s.InFront != nil {
+	if s.Adj[0] != nil {
 		dir = rotate(s.Dir, math.Pi)
-		tmp = s.InFront.Position()
+		tmp = s.Adj[0].Position()
 		pt.X += s.Pt.X-tmp.X-spacing*math.Cos(dir)
 		pt.Y += s.Pt.Y-tmp.Y-spacing*math.Sin(dir)
 	}
-	if s.OnLeft != nil && s.ByLeft {
+	if s.Adj[3] != nil && s.ByLeft {
 		dir = rotate(s.Dir, -0.5*math.Pi)
-		tmp = s.OnLeft.Position()
+		tmp = s.Adj[3].Position()
 		pt.X += s.Pt.X-tmp.X-spacing*math.Cos(dir)
 		pt.Y += s.Pt.Y-tmp.Y-spacing*math.Sin(dir)
 	}
-	if s.OnRight != nil && !s.ByLeft {
+	if s.Adj[1] != nil && !s.ByLeft {
 		dir = rotate(s.Dir, 0.5*math.Pi)
-		tmp = s.OnRight.Position()
+		tmp = s.Adj[1].Position()
 		pt.X += s.Pt.X-tmp.X-spacing*math.Cos(dir)
 		pt.Y += s.Pt.Y-tmp.Y-spacing*math.Sin(dir)
 	}
@@ -159,9 +183,11 @@ func (s *Soldier) Step() {
 	case RightWheel:
 	case LeftTurn:
 		s.Dir = leftTurn(s.Dir)
-		s.Revert()
+		s.Adj[0], s.Adj[1], s.Adj[2], s.Adj[3] = s.Adj[3], s.Adj[0], s.Adj[1], s.Adj[2]
+		s.Color()
 	case RightTurn:
 		s.Dir = rightTurn(s.Dir)
-		s.Revert()
+		s.Adj[0], s.Adj[1], s.Adj[2], s.Adj[3] = s.Adj[1], s.Adj[2], s.Adj[3], s.Adj[0]
+		s.Color()
 	}
 }

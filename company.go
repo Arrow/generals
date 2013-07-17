@@ -1,9 +1,10 @@
 package generals
 
 import (
-	//"fmt"
+	"fmt"
 	"math"
 	"github.com/Arrow/display"
+	"github.com/golang/glog"
 )
 
 type Formation int
@@ -56,30 +57,33 @@ func NewCompany(d *display.Display, pt Point, dir float64, nSoldiers int, f Form
 		pti.Y = pt.Y + 
 			float64(col) * spacing * math.Sin(left) + 
 			float64(row) * spacing * math.Sin(back)
-		c.s[i] = NewSoldier(d, pti, dir)
+		c.s[i] = NewSoldier(d, fmt.Sprintf("Sol %v", i), pti, dir)
 		col++
 		if col == c.cols {
 			col = 0
 			row++
 		}
 	}
-	//fmt.Println(c.cols, c.rows)
 	for i, s := range c.s {
 		if i >= c.cols {
-			s.SetInFront(c.s[i-c.cols])
+			s.Adj[0] = c.s[i-c.cols]
 		}
 		if i % c.cols != 0 {
-			s.SetOnRight(c.s[i-1])
+			s.Adj[1] = c.s[i-1]
 		}
 		if i % c.cols != c.cols - 1 && i != len(c.s) - 1 {
-			s.SetOnLeft(c.s[i+1])
+			s.Adj[3] = c.s[i+1]
 		}
+		if i < len(c.s) - c.cols {
+			s.Adj[2] = c.s[i+c.cols]
+		}
+		s.Color()
 		col++
 		if col == c.cols {
 			col = 0
 		}
+		//fmt.Print(s)
 	}
-	//fmt.Println("Here")
 	return c
 }
 
@@ -98,6 +102,13 @@ func (c *Company) Update() {
 func (c *Company) Orders(o Order) {
 	for _, s := range c.s {
 		s.Orders(o)
-		//fmt.Println(s)
+		glog.Info("Order", o)
+	}
+}
+
+func (c *Company) PrintFormation() {
+	fmt.Println("Formation Printed")
+	for _, s := range c.s {
+		glog.Info(s)
 	}
 }

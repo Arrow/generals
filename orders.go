@@ -9,6 +9,18 @@ const (
 	RightWheel
 	LeftTurn
 	RightTurn
+	Reform
+	FormRow
+	FormTwoRow
+	FormThreeRow
+	FormFourRow
+	FormCol
+	FormTwoCol
+	FormThreeCol
+	FormFourCol
+	FormFiveCol
+	Quit
+	PrintForm
 )
 
 type Orderer interface {

@@ -29,12 +29,23 @@ func OrderKey(d *display.Display, ch chan generals.Order, o generals.Order, key 
 
 func KeyOrders(d *display.Display) chan generals.Order {
 	ch := make(chan generals.Order)
-	OrderKey(d, ch, generals.Halt, "h")
-	OrderKey(d, ch, generals.ForwardMarch, "f")
-	OrderKey(d, ch, generals.LeftTurn, "l")
-	OrderKey(d, ch, generals.RightTurn, "r")
+	OrderKey(d, ch, generals.Halt, "s")
+	OrderKey(d, ch, generals.ForwardMarch, "w")
+	OrderKey(d, ch, generals.LeftTurn, "a")
+	OrderKey(d, ch, generals.RightTurn, "d")
 	OrderKey(d, ch, generals.LeftWheel, "q")
 	OrderKey(d, ch, generals.RightWheel, "e")
+	OrderKey(d, ch, generals.Quit, "o")
+	OrderKey(d, ch, generals.PrintForm, "p")
+	OrderKey(d, ch, generals.FormRow, "1")
+	OrderKey(d, ch, generals.FormTwoRow, "2")
+	OrderKey(d, ch, generals.FormThreeRow, "3")
+	OrderKey(d, ch, generals.FormFourRow, "4")
+	OrderKey(d, ch, generals.FormCol, "g")
+	OrderKey(d, ch, generals.FormTwoCol, "h")
+	OrderKey(d, ch, generals.FormThreeCol, "j")
+	OrderKey(d, ch, generals.FormFourCol, "k")
+	OrderKey(d, ch, generals.FormFiveCol, "l")
 	glog.Infoln("Keys Logged")
 	return ch
 }
@@ -59,7 +70,8 @@ func main() {
 		glog.Fatal(err)
 	}
 	
-	c := generals.NewCompany(d, generals.Point{100, 200}, 0, 24, generals.FourRow)
+	c := generals.NewCompany(d, complex(float64(100), float64(200)), 
+		complex(float64(1),float64(0)), 24, generals.FourCol)
 	
 	tick := time.Tick(500 * time.Millisecond)
 	timer := time.Tick(time.Second)
@@ -80,12 +92,12 @@ func main() {
 			d.SetHeadingText(fmt.Sprint("FPS: ", fps))
 			ctr = 0
 		case <-timerEnd:
-			return
+			//return
 		case o := <-orders:
-			if o == generals.RightWheel {
+			if o == generals.Quit {
 				return
 			}
-			if o == generals.LeftWheel {
+			if o == generals.PrintForm {
 				c.PrintFormation()
 				break
 			}

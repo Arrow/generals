@@ -1,14 +1,14 @@
 package generals
 
 import (
+	"fmt"
+	"github.com/Arrow/display"
+	"github.com/golang/glog"
+	"image/color"
 	"math"
 	"math/cmplx"
 	"math/rand"
-	"fmt"
 	"strings"
-	"github.com/Arrow/display"
-	"image/color"
-	"github.com/golang/glog"
 )
 
 const (
@@ -136,7 +136,7 @@ func (s *Soldier) AddToForm(sc *Soldier, ctr, cols int) (added bool) {
 		}
 		return true
 	}
-	if s.Adj[3].AddToForm(sc, ctr + 1, cols) {
+	if s.Adj[3].AddToForm(sc, ctr+1, cols) {
 		return true
 	}
 	if s.Adj[1] == nil {
@@ -218,6 +218,7 @@ func (s *Soldier) Color() {
 	s.P.ChangeColor(color.Black)
 	s.P.Move(real(s.Pt), imag(s.Pt))
 }
+
 /*
 func (s *Soldier) Row() int {
 	if s.Adj[0] == nil {
@@ -234,8 +235,8 @@ func (s *Soldier) Col() int {
 }
 
 var (
-	left complex128 = cmplx.Rect(1, 0.5 * math.Pi)
-	right complex128 = cmplx.Rect(1, -0.5 * math.Pi)
+	left  complex128 = cmplx.Rect(1, 0.5*math.Pi)
+	right complex128 = cmplx.Rect(1, -0.5*math.Pi)
 )
 
 func (s *Soldier) refPoint() complex128 {
@@ -243,17 +244,17 @@ func (s *Soldier) refPoint() complex128 {
 	if s.Adj[0] != nil {
 		dir = s.Dir * left * left
 		tmp = s.Adj[0].Position()
-		pt += s.Pt - tmp - complex(spacing,0) * dir
+		pt += s.Pt - tmp - complex(spacing, 0)*dir
 	}
 	if s.Adj[3] != nil && s.ByLeft {
 		dir = s.Dir * right
 		tmp = s.Adj[3].Position()
-		pt += s.Pt - tmp - complex(spacing,0) * dir
+		pt += s.Pt - tmp - complex(spacing, 0)*dir
 	}
 	if s.Adj[1] != nil && !s.ByLeft {
 		dir = s.Dir * left
 		tmp = s.Adj[1].Position()
-		pt += s.Pt - tmp - complex(spacing,0) * dir
+		pt += s.Pt - tmp - complex(spacing, 0)*dir
 	}
 	return pt
 }
@@ -265,22 +266,22 @@ func (s *Soldier) refPt() complex128 {
 		ctr++
 		dir = s.Adj[0].Dir
 		tmp = s.Adj[0].Position()
-		pt += tmp - complex(spacing,0) * dir
+		pt += tmp - complex(spacing, 0)*dir
 	}
 	if s.Adj[3] != nil && s.ByLeft {
 		ctr++
 		dir = s.Adj[3].Dir * left
 		tmp = s.Adj[3].Position()
-		pt += tmp - complex(spacing,0) * dir
+		pt += tmp - complex(spacing, 0)*dir
 	}
 	if s.Adj[1] != nil && !s.ByLeft {
 		ctr++
 		dir = s.Adj[1].Dir * right
 		tmp = s.Adj[1].Position()
-		pt += tmp - complex(spacing,0) * dir
+		pt += tmp - complex(spacing, 0)*dir
 	}
 	glog.Info(pt, ctr)
-	return pt / complex(float64(ctr),0)
+	return pt / complex(float64(ctr), 0)
 }
 
 func (s *Soldier) Step() {
@@ -288,42 +289,42 @@ func (s *Soldier) Step() {
 	switch s.Current {
 	case Halt:
 	case ForwardMarch:
-		s.Pt += complex(vel, 0)*s.Dir - ref * complex(gain,0) +
-			complex(velRand,0) * complex(rand.Float64(), rand.Float64())
+		s.Pt += complex(vel, 0)*s.Dir - ref*complex(gain, 0) +
+			complex(velRand, 0)*complex(rand.Float64(), rand.Float64())
 		s.P.Move(real(s.Pt), imag(s.Pt))
 	case LeftWheel:
 		v := velMax
 		if s.Adj[0] == nil {
 			_, cols := s.C.f.RowCols(len(s.C.s))
-			v *= float64(cols - s.Col() + 1)/float64(cols+1)
-			th := velMax / (2 * math.Pi * float64(cols + 1))
-			s.Dir *= cmplx.Rect(1,th)
+			v *= float64(cols-s.Col()+1) / float64(cols+1)
+			th := velMax / (2 * math.Pi * float64(cols+1))
+			s.Dir *= cmplx.Rect(1, th)
 		} else {
 			v = vel
 		}
-		s.Pt += complex(v, 0)*s.Dir - ref * complex(gain,0) +
-			complex(velRand,0) * complex(rand.Float64(), rand.Float64())
+		s.Pt += complex(v, 0)*s.Dir - ref*complex(gain, 0) +
+			complex(velRand, 0)*complex(rand.Float64(), rand.Float64())
 		s.P.Move(real(s.Pt), imag(s.Pt))
 	case RightWheel:
 		v := velMax
 		if s.Adj[0] == nil {
 			_, cols := s.C.f.RowCols(len(s.C.s))
-			v *= float64(s.Col()+1)/float64(cols+1)
-			th := velMax / (2 * math.Pi * float64(cols + 1))
-			s.Dir *= cmplx.Rect(1,-th)
+			v *= float64(s.Col()+1) / float64(cols+1)
+			th := velMax / (2 * math.Pi * float64(cols+1))
+			s.Dir *= cmplx.Rect(1, -th)
 		} else {
 			v = vel
 		}
-		s.Pt += complex(v, 0)*s.Dir - ref * complex(gain,0) +
-			complex(velRand,0) * complex(rand.Float64(), rand.Float64())
+		s.Pt += complex(v, 0)*s.Dir - ref*complex(gain, 0) +
+			complex(velRand, 0)*complex(rand.Float64(), rand.Float64())
 		s.P.Move(real(s.Pt), imag(s.Pt))
-//	case LeftTurn, RightTurn:
-//		s.Color()
+		//	case LeftTurn, RightTurn:
+		//		s.Color()
 	case Reform:
-		s.Pt -= ref * complex(gainRef, 0) -
-			complex(velRand,0) * complex(rand.Float64(), rand.Float64())
+		s.Pt -= ref*complex(gainRef, 0) -
+			complex(velRand, 0)*complex(rand.Float64(), rand.Float64())
 		s.P.Move(real(s.Pt), imag(s.Pt))
-		if cmplx.Abs(s.Pt - ref) < 0.1 {
+		if cmplx.Abs(s.Pt-ref) < 0.1 {
 			s.Orders(Halt)
 		}
 	}
@@ -334,12 +335,12 @@ func (s *Soldier) Step() {
 
 func (s *Soldier) lTurn() {
 	s.Dir *= left
-	s.Adj[0], s.Adj[1], s.Adj[2], s.Adj[3] = 
+	s.Adj[0], s.Adj[1], s.Adj[2], s.Adj[3] =
 		s.Adj[3], s.Adj[0], s.Adj[1], s.Adj[2]
 }
 
 func (s *Soldier) rTurn() {
-		s.Dir *= right
-		s.Adj[0], s.Adj[1], s.Adj[2], s.Adj[3] = 
-			s.Adj[1], s.Adj[2], s.Adj[3], s.Adj[0]
+	s.Dir *= right
+	s.Adj[0], s.Adj[1], s.Adj[2], s.Adj[3] =
+		s.Adj[1], s.Adj[2], s.Adj[3], s.Adj[0]
 }

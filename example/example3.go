@@ -5,8 +5,8 @@ import (
 	"github.com/Arrow/display"
 	"github.com/Arrow/generals"
 	//"log"
-	"time"
 	"github.com/golang/glog"
+	"time"
 )
 
 const (
@@ -64,20 +64,20 @@ func CallOrders(orders []OrderTiming) chan generals.Order {
 
 func main() {
 	defer glog.Flush()
-	
+
 	d, err := display.NewDisplay(width, height, border, heading, "Soldier")
 	if err != nil {
 		glog.Fatal(err)
 	}
-	
-	c := generals.NewCompany(d, complex(float64(100), float64(200)), 
-		complex(float64(1),float64(0)), 24, generals.FourCol)
-	
+
+	c := generals.NewCompany(d, complex(float64(100), float64(200)),
+		complex(float64(1), float64(0)), 24, generals.FourCol)
+
 	tick := time.Tick(500 * time.Millisecond)
 	timer := time.Tick(time.Second)
-	timerEnd := time.Tick(60 * time.Second)
+	timerEnd := time.Tick(2 * time.Second)
 	orders := KeyOrders(d)
-	
+
 	ctr := 0
 	fps := 0
 	for {
@@ -92,7 +92,7 @@ func main() {
 			d.SetHeadingText(fmt.Sprint("FPS: ", fps))
 			ctr = 0
 		case <-timerEnd:
-			//return
+			return
 		case o := <-orders:
 			if o == generals.Quit {
 				return

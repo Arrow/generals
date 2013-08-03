@@ -27,13 +27,13 @@ func (f Formation) RowCols(nSoldiers int) (rows, cols int) {
 	case SingleRow, TwoRow, ThreeRow, FourRow:
 		rows = int(f) - 5
 		cols = nSoldiers / rows
-		if nSoldiers % rows != 0 {
+		if nSoldiers%rows != 0 {
 			cols += 1
 		}
 	default:
 		cols = int(f) + 1
 		rows = nSoldiers / cols
-		if nSoldiers % cols != 0 {
+		if nSoldiers%cols != 0 {
 			rows += 1
 		}
 	}
@@ -41,9 +41,9 @@ func (f Formation) RowCols(nSoldiers int) (rows, cols int) {
 }
 
 type Company struct {
-	s []*Soldier
+	s       []*Soldier
 	alignBy *Soldier
-	f Formation
+	f       Formation
 }
 
 func NewCompany(d *display.Display, pt complex128, dir complex128, nSoldiers int, f Formation) (c *Company) {

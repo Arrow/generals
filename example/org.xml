@@ -1,0 +1,36 @@
+<Group>
+  <Name>Regiment</Name>
+  <Subgroup>
+    <SubName>Company</SubName>
+    <DefaultSub>5</DefaultSub>
+  </Subgroup>
+</Group>
+<Group>
+  <Name>Brigade</Name>
+  <Subgroup>
+    <SubName>Regiment</SubName>
+    <DefaultSub>4</DefaultSub>
+  </Subgroup>
+  <Subgroup>
+    <SubName>Company</SubName>
+    <DefaultSub>1</DefaultSub>
+  </Subgroup>
+</Group>
+<Group>
+  <Name>Division</Name>
+  <Subgroup>
+    <SubName>Brigade</SubName>
+    <DefaultSub>3</DefaultSub>
+  </Subgroup>
+  <Subgroup>
+    <SubName>Company</SubName>
+    <DefaultSub>3</DefaultSub>
+  </Subgroup>
+</Group>
+<Group>
+  <Name>Corps</Name>
+  <Subgroup>
+    <SubName>Division</SubName>
+    <DefaultSub>3</DefaultSub>
+  </Subgroup>
+</Group>

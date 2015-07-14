@@ -12,7 +12,7 @@ import (
 	"os"
 	//"github.com/skelterjohn/geom"
 	//"github.com/skelterjohn/go.uik/layouts"
-	"code.google.com/p/draw2d/draw2d"
+	"github.com/llgcode/draw2d"
 	"github.com/BurntSushi/xgbutil"
 	"github.com/BurntSushi/xgbutil/xevent"
 	"github.com/BurntSushi/xgbutil/xgraphics"
